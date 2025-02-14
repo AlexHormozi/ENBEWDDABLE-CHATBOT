@@ -2,10 +2,12 @@ from flask import Flask, request, jsonify
 import requests
 import pymongo
 import os
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Allow frontend to connect to backend
 
-# Use environment variable for security
+# Use environment variables for security
 MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://batman:1%40mBATMAN@cluster0.edbvm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
 
@@ -55,6 +57,26 @@ def chat():
 
     response_data = response.json()
     return jsonify({"response": response_data["choices"][0]["message"]["content"]})
+
+# ✅ API to Generate Embed Code for Users
+@app.route("/api/generate_embed", methods=["POST"])
+def generate_embed():
+    data = request.json
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+
+    embed_code = f"""
+    <script src="https://enbewddable-chatbot.onrender.com/embed.js" data-user-id="{user_id}" data-theme="light" data-color="#000"></script>
+    """
+
+    return jsonify({"embed_code": embed_code})
+
+# ✅ Optional: Add a homepage response instead of 404
+@app.route("/")
+def home():
+    return "Welcome to the Embeddable Chatbot API! Use /api/chat and /api/generate_embed."
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
