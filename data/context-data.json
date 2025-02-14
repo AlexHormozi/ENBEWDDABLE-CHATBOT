@@ -1,0 +1,24 @@
+{
+  "company_name": "LaunchLoom",
+  "product": "AI-powered SaaS Business Builder",
+  "description": "LaunchLoom helps entrepreneurs create and scale SaaS businesses with AI automation, marketing tools, and business guidance.",
+  "key_features": [
+    "AI mentor that provides personalized business advice",
+    "Automated marketing and lead generation",
+    "Pre-built SaaS templates for quick deployment",
+    "Goal tracking and progress analytics"
+  ],
+  "target_audience": "Entrepreneurs, startup founders, and business owners looking to build a profitable SaaS company.",
+  "value_proposition": "LaunchLoom removes the technical barriers to building a SaaS company by automating key processes, saving time and increasing success rates.",
+  "sales_strategy": {
+    "attention": "Are you struggling to build your SaaS business? Imagine launching your product in days, not months.",
+    "interest": "LaunchLoom gives you AI-driven tools to validate, build, and market your SaaS without hiring developers.",
+    "desire": "Top entrepreneurs are using LaunchLoom to generate revenue quickly. Would you like to see how it works?",
+    "action": "Sign up today and start your SaaS journey with AI-powered automation!"
+  },
+  "objection_handling": {
+    "pricing": "Think of LaunchLoom as an investment. The cost is lower than hiring a developer or marketer, and it accelerates your business growth.",
+    "complexity": "We designed LaunchLoom for simplicity—no coding required. Just follow our AI-guided steps.",
+    "effectiveness": "Over 500 startups have successfully launched with LaunchLoom. Let me show you real case studies!"
+  }
+}
