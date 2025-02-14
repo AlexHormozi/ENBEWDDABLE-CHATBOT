@@ -67,9 +67,7 @@ def generate_embed():
     if not user_id:
         return jsonify({"error": "Missing user_id"}), 400
 
-    embed_code = f"""
-    <script src="https://enbewddable-chatbot.onrender.com/embed.js" data-user-id="{user_id}" data-theme="light" data-color="#000"></script>
-    """
+    embed_code = f'<script src="https://enbewddable-chatbot.onrender.com/embed.js" data-user-id="{user_id}" data-theme="light" data-color="#000"></script>'
 
     return jsonify({"embed_code": embed_code})
 
