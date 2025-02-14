@@ -1,37 +1,40 @@
 (function() {
-    let script = document.currentScript;
-    let userId = script.getAttribute("data-user-id");
-    let theme = script.getAttribute("data-theme") || "light";
-    let color = script.getAttribute("data-color") || "#000";
-    let position = script.getAttribute("data-position") || "bottom-right";
+    // Retrieve configuration from the script tag's data attributes
+    var script = document.currentScript;
+    var userId = script.getAttribute("data-user-id");
+    var theme = script.getAttribute("data-theme") || "light";
+    var color = script.getAttribute("data-color") || "#000";
+    var position = script.getAttribute("data-position") || "bottom-right";
 
-    window.chatbotConfig = { userId, theme, color, position };
+    // Build query parameters to pass configuration to index.html
+    var params = new URLSearchParams();
+    params.set("user_id", userId);
+    params.set("theme", theme);
+    params.set("color", color);
 
-    let widget = document.createElement("div");
-    widget.style = `
-        position: fixed;
-        ${position.includes("bottom") ? "bottom: 20px;" : "top: 20px;"}
-        ${position.includes("right") ? "right: 20px;" : "left: 20px;"}
-        background: ${color};
-        padding: 10px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        font-family: Arial, sans-serif;
-        z-index: 9999;
-    `;
-    widget.innerHTML = `
-        <input type='text' id='chatInput' placeholder='Ask something...' style='width: 200px; padding: 5px; border-radius: 5px; border: 1px solid #ccc;'>
-        <button id='chatBtn' style='padding: 5px 10px; background: #007bff; color: white; border: none; cursor: pointer;'>Send</button>
-        <div id='chatResponse' style='margin-top: 10px; padding: 5px; background: white; color: black; border-radius: 5px;'></div>
-    `;
+    // Create an iframe that loads your full chatbot UI (index.html)
+    var iframe = document.createElement("iframe");
+    iframe.src = "https://enbewddable-chatbot.onrender.com/index.html?" + params.toString();
+    
+    // Style the iframe to match your widget's desired dimensions and position
+    iframe.style.position = "fixed";
+    if (position.includes("bottom")) {
+        iframe.style.bottom = "20px";
+    } else {
+        iframe.style.top = "20px";
+    }
+    if (position.includes("right")) {
+        iframe.style.right = "20px";
+    } else {
+        iframe.style.left = "20px";
+    }
+    iframe.style.width = "350px";   // Adjust as needed (matches your designed width)
+    iframe.style.height = "500px";  // Adjust as needed (matches your designed height)
+    iframe.style.border = "none";
+    iframe.style.borderRadius = "10px";
+    iframe.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.2)";
+    iframe.style.zIndex = "9999";
 
-    document.body.appendChild(widget);
-
-    document.getElementById("chatBtn").addEventListener("click", function() {
-        let query = document.getElementById("chatInput").value;
-        fetch(`https://enbewddable-chatbot.onrender.com/api/chat?user_id=${userId}&query=${query}`)
-            .then(response => response.json())
-            .then(data => document.getElementById("chatResponse").innerText = data.response)
-            .catch(err => console.error("API Error:", err));
-    });
+    // Append the iframe to the document body
+    document.body.appendChild(iframe);
 })();
