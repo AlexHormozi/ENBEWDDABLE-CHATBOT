@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import requests
 import pymongo
 import os
@@ -70,6 +70,11 @@ def generate_embed():
     embed_code = f'<script src="https://enbewddable-chatbot.onrender.com/embed.js" data-user-id="{user_id}" data-theme="light" data-color="#000"></script>'
 
     return jsonify({"embed_code": embed_code})
+
+# ✅ Serve `embed.js` from the frontend folder
+@app.route("/embed.js")
+def serve_embed_js():
+    return send_from_directory("frontend", "embed.js")
 
 # ✅ Optional: Add a homepage response instead of 404
 @app.route("/")
