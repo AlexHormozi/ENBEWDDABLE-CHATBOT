@@ -4,7 +4,7 @@ import pymongo
 import os
 from flask_cors import CORS
 
-# Set the static folder to "static" so all static files are served from there.
+# Set the static folder to "static" so all static files (HTML, CSS, JS, images) are served from there.
 app = Flask(__name__, static_folder="static")
 CORS(app)  # Allow cross-origin requests
 
@@ -63,7 +63,6 @@ def generate_embed():
     if not user_id:
         return jsonify({"error": "Missing user_id"}), 400
 
-    # Generate embed code that loads embed.js from our domain
     embed_code = f'<script src="https://enbewddable-chatbot.onrender.com/embed.js" data-user-id="{user_id}" data-theme="light" data-color="#000"></script>'
     return jsonify({"embed_code": embed_code})
 
@@ -72,7 +71,7 @@ def generate_embed():
 def serve_embed_js():
     return send_from_directory(app.static_folder, "embed.js")
 
-# (Optional) Serve index.html from the static folder so you can load the full chatbot UI directly
+# Serve index.html from the static folder so you can load the full UI
 @app.route("/index.html")
 def serve_index_html():
     return send_from_directory(app.static_folder, "index.html")
