@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+\from flask import Flask, request, jsonify, send_from_directory
 import requests
 import pymongo
 import os
@@ -75,6 +75,11 @@ def serve_embed_js():
 @app.route("/index.html")
 def serve_index_html():
     return send_from_directory(app.static_folder, "index.html")
+
+# NEW: Serve files from the data folder (for dynamic context data)
+@app.route('/data/<path:filename>')
+def serve_data(filename):
+    return send_from_directory('data', filename)
 
 # Home route
 @app.route("/")
