@@ -4,26 +4,24 @@ import pymongo
 import os
 from flask_cors import CORS
 
-# 1. Set the static folder to "static"
+# Set the static folder to "static" so all static files are served from there.
 app = Flask(__name__, static_folder="static")
 CORS(app)  # Allow cross-origin requests
 
-# 2. Environment variables for security
+# Use environment variables for security (with fallback defaults)
 MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://batman:1%40mBATMAN@cluster0.edbvm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
 
-# 3. Connect to MongoDB
+# Connect to MongoDB
 client = pymongo.MongoClient(MONGO_URL)
 db = client["chatbotDB"]
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-# 4. Chatbot endpoint
 @app.route("/api/chat", methods=["GET"])
 def chat():
     user_id = request.args.get("user_id")
     query = request.args.get("query")
-
     if not user_id or not query:
         return jsonify({"error": "Missing parameters"}), 400
 
@@ -51,14 +49,13 @@ def chat():
 
     headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
     response = requests.post(GROQ_API_URL, json=request_body, headers=headers)
-
     if response.status_code != 200:
         return jsonify({"error": "Groq API Error"}), 500
 
     response_data = response.json()
     return jsonify({"response": response_data["choices"][0]["message"]["content"]})
 
-# 5. Endpoint to generate embed code
+# API to generate the embed code for users
 @app.route("/api/generate_embed", methods=["POST"])
 def generate_embed():
     data = request.json
@@ -66,21 +63,21 @@ def generate_embed():
     if not user_id:
         return jsonify({"error": "Missing user_id"}), 400
 
-    # The user can paste this code into their website or Bubble.io
+    # Generate embed code that loads embed.js from our domain
     embed_code = f'<script src="https://enbewddable-chatbot.onrender.com/embed.js" data-user-id="{user_id}" data-theme="light" data-color="#000"></script>'
     return jsonify({"embed_code": embed_code})
 
-# 6. Serve embed.js from the static folder
+# Serve embed.js from the static folder
 @app.route("/embed.js")
 def serve_embed_js():
     return send_from_directory(app.static_folder, "embed.js")
 
-# 7. (Optional) Serve index.html from the static folder (e.g., for iframes)
+# (Optional) Serve index.html from the static folder so you can load the full chatbot UI directly
 @app.route("/index.html")
 def serve_index_html():
     return send_from_directory(app.static_folder, "index.html")
 
-# 8. Home route instead of a 404
+# Home route
 @app.route("/")
 def home():
     return "Welcome to the Embeddable Chatbot API! Use /api/chat and /api/generate_embed."
