@@ -76,7 +76,17 @@ def serve_embed_js():
 def serve_index_html():
     return send_from_directory(app.static_folder, "index.html")
 
-# NEW: Serve files from the data folder (for dynamic context data)
+# Serve style.css from the static folder
+@app.route("/style.css")
+def serve_style_css():
+    return send_from_directory(app.static_folder, "style.css")
+
+# Serve script.js from the static folder
+@app.route("/script.js")
+def serve_script_js():
+    return send_from_directory(app.static_folder, "script.js")
+
+# Serve files from the data folder (for dynamic context data)
 @app.route('/data/<path:filename>')
 def serve_data(filename):
     return send_from_directory('data', filename)
