@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #8400ff;
-    --secondary-color: #0f2728;
-    --accent-color: #0ff11a;
+    --primary-color: #8400ff;   /* The main color for the widget bubble */
+    --secondary-color: #0f2728; /* Not used for page background anymore */
+    --accent-color: #0ff11a;    /* Used for the 'Online' indicator and toggle animation */
 }
 
 * {
@@ -9,17 +9,19 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-    color: #fff;
+    color: #fff; /* If you want the rest of your site to have black text, remove or override this. */
 }
 
+/* Remove the forced teal background and flex centering from the entire page */
 body {
-    background: var(--secondary-color);
-    min-height: 100vh;
+    background: #ffffff; /* Use white or whatever you want as the page background */
+    /* min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
 }
 
+/* Keep the chatbot pinned to the bottom-right corner */
 .chatbot-container {
     position: fixed;
     bottom: 2rem;
@@ -27,6 +29,7 @@ body {
     z-index: 1000;
 }
 
+/* The circular toggle button that appears before opening the widget */
 .chatbot-toggle {
     position: absolute;
     bottom: 0;
@@ -48,6 +51,7 @@ body {
     transition: transform 0.3s ease;
 }
 
+/* The main widget panel that pops out */
 .chatbot-widget {
     width: 350px;
     height: 500px;
@@ -63,16 +67,19 @@ body {
     flex-direction: column;
 }
 
+/* When .chatbot-container has 'active', show the widget */
 .chatbot-container.active .chatbot-widget {
     transform: scale(1);
     opacity: 1;
 }
 
+/* Animate toggle button when widget is open */
 .chatbot-container.active .chatbot-toggle {
     transform: translateY(-10px) rotate(360deg);
     background: var(--accent-color);
 }
 
+/* Chatbot header (title, agent icon, close button) */
 .chatbot-header {
     display: flex;
     justify-content: space-between;
@@ -103,6 +110,7 @@ body {
     margin-left: 0.5rem;
 }
 
+/* Message area scrolls while the widget is open */
 .chat-messages {
     flex: 1;
     padding: 1rem 1rem 6rem;
@@ -113,6 +121,7 @@ body {
     transition: padding 0.3s ease;
 }
 
+/* Basic message animations */
 .message {
     display: flex;
     max-width: 80%;
@@ -131,11 +140,12 @@ body {
     }
 }
 
+/* Bot vs. User alignment */
 .bot-message {
     align-self: flex-start;
 }
 
-.bot-message img{
+.bot-message img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -147,6 +157,7 @@ body {
     flex-direction: row-reverse;
 }
 
+/* The "bubble" for each message */
 .message-content {
     background: var(--primary-color);
     padding: 0.8rem 1.2rem;
@@ -156,6 +167,7 @@ body {
     word-break: break-word;
 }
 
+/* Small timestamp under each message */
 .timestamp {
     display: block;
     font-size: 0.75rem;
@@ -163,6 +175,7 @@ body {
     margin-top: 0.5rem;
 }
 
+/* Input area at the bottom of the widget */
 .chat-input {
     position: relative;
     width: 100%;
