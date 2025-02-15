@@ -1,1 +1,49 @@
-index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Chatbot</title>
+    <link rel="stylesheet" href="style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chatbot-toggle">
+            <i class='bx bx-message-rounded'></i>
+        </div>
+        
+        <div class="chatbot-widget">
+            <div class="chatbot-header">
+                <div class="agent-info">
+                    <img src="data:image/jpeg;base64,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" alt="Agent">
+                    <div class="agent-status">
+                        <h3>CHATBOT</h3>
+                        <p>Online <span class="status-indicator"></span></p>
+                    </div>
+                </div>
+                <i class='bx bx-x close-btn'></i>
+            </div>
+            
+            <div class="chat-messages">
+                <div class="bot-message">
+                    <img src="data:image/jpeg;base64,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" alt="Bot">
+                    <div class="message-content">
+                        <p>Hey there! How can I help you today?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <div class="input-container">
+                    <i class='bx bx-plus attach-btn'></i>
+                    <textarea placeholder="Type your message..." rows="1"></textarea>
+                    <i class='bx bx-send send-btn'></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
