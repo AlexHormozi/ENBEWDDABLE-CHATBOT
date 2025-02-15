@@ -1,27 +1,29 @@
 :root {
-    --primary-color: #8400ff;   /* The main color for the widget bubble */
-    --secondary-color: #0f2728; /* Not used for page background anymore */
-    --accent-color: #0ff11a;    /* Used for the 'Online' indicator and toggle animation */
+    --primary-color: #8400ff;   /* For the message bubble background */
+    --secondary-color: #0f2728; /* Unused by default now, but you can reuse if you want */
+    --accent-color: #0ff11a;    /* Used for the 'Online' indicator & toggle animation */
 }
 
+/* Remove forced #fff text color from everything so the rest of your site can be normal */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-    color: #fff; /* If you want the rest of your site to have black text, remove or override this. */
+    /* color: #fff; <-- (REMOVED) We'll set text color inside the widget instead */
 }
 
-/* Remove the forced teal background and flex centering from the entire page */
+/* Make the page background white (or whatever color you want) */
 body {
-    background: #ffffff; /* Use white or whatever you want as the page background */
+    background: #ffffff; /* (CHANGED) removed var(--secondary-color) */
     /* min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center; */
+       display: flex;
+       justify-content: center;
+       align-items: center; */
+    /* (REMOVED) no more forced centering or min-height */
 }
 
-/* Keep the chatbot pinned to the bottom-right corner */
+/* The chatbot container pinned to bottom-right remains the same */
 .chatbot-container {
     position: fixed;
     bottom: 2rem;
@@ -29,7 +31,7 @@ body {
     z-index: 1000;
 }
 
-/* The circular toggle button that appears before opening the widget */
+/* Circular toggle button for the chatbot */
 .chatbot-toggle {
     position: absolute;
     bottom: 0;
@@ -51,11 +53,15 @@ body {
     transition: transform 0.3s ease;
 }
 
-/* The main widget panel that pops out */
+/* The main widget that pops open */
 .chatbot-widget {
     width: 350px;
     height: 500px;
-    background: rgba(255, 255, 255, 0.1);
+
+    /* Instead of translucent dark, give it a solid background & text color */
+    background: #f9f9f9; /* (CHANGED) Light background so white text won't vanish */
+    color: #000;         /* (CHANGED) Black text inside the widget by default */
+
     border-radius: 20px;
     backdrop-filter: blur(10px);
     transform: scale(0);
@@ -67,25 +73,25 @@ body {
     flex-direction: column;
 }
 
-/* When .chatbot-container has 'active', show the widget */
+/* Show widget when .active */
 .chatbot-container.active .chatbot-widget {
     transform: scale(1);
     opacity: 1;
 }
 
-/* Animate toggle button when widget is open */
+/* Animate toggle button on open */
 .chatbot-container.active .chatbot-toggle {
     transform: translateY(-10px) rotate(360deg);
     background: var(--accent-color);
 }
 
-/* Chatbot header (title, agent icon, close button) */
+/* Header area */
 .chatbot-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* (CHANGED) Black-ish border for light BG */
 }
 
 .agent-info {
@@ -98,7 +104,7 @@ body {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 2px solid #fff;
+    border: 2px solid #fff; /* This can stay if your agent pic has a white border */
 }
 
 .status-indicator {
@@ -110,7 +116,7 @@ body {
     margin-left: 0.5rem;
 }
 
-/* Message area scrolls while the widget is open */
+/* The scrollable message area */
 .chat-messages {
     flex: 1;
     padding: 1rem 1rem 6rem;
@@ -121,7 +127,6 @@ body {
     transition: padding 0.3s ease;
 }
 
-/* Basic message animations */
 .message {
     display: flex;
     max-width: 80%;
@@ -140,7 +145,6 @@ body {
     }
 }
 
-/* Bot vs. User alignment */
 .bot-message {
     align-self: flex-start;
 }
@@ -157,9 +161,10 @@ body {
     flex-direction: row-reverse;
 }
 
-/* The "bubble" for each message */
+/* The message bubble backgrounds */
 .message-content {
-    background: var(--primary-color);
+    background: var(--primary-color); /* Purple bubble */
+    color: #fff;                     /* White text in the bubble (CHANGED) */
     padding: 0.8rem 1.2rem;
     border-radius: 15px;
     position: relative;
@@ -167,7 +172,7 @@ body {
     word-break: break-word;
 }
 
-/* Small timestamp under each message */
+/* Timestamp styling */
 .timestamp {
     display: block;
     font-size: 0.75rem;
@@ -175,13 +180,13 @@ body {
     margin-top: 0.5rem;
 }
 
-/* Input area at the bottom of the widget */
+/* Chat input at bottom */
 .chat-input {
     position: relative;
     width: 100%;
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.05); /* Slight dark overlay for the input area (CHANGED) */
+    border-top: 1px solid rgba(0, 0, 0, 0.1); /* (CHANGED) */
     margin-top: auto;
 }
 
@@ -189,7 +194,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1); /* (CHANGED) For a subtle dark overlay inside the input */
     border-radius: 15px;
     padding: 0.5rem;
 }
@@ -200,7 +205,7 @@ textarea {
     border: none;
     resize: none;
     padding: 0.5rem;
-    color: #fff;
+    color: #000; /* (CHANGED) If the input area is light, use black text */
     min-height: 40px;
     max-height: 120px;
     transition: height 0.3s ease;
