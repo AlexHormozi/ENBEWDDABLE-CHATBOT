@@ -15,7 +15,7 @@
 
 /* Make the page background white (or whatever color you want) */
 body {
-    background: #ffffff; /* (CHANGED) removed var(--secondary-color) */
+    background: transparent; /* (CHANGED) removed var(--secondary-color) */
     /* min-height: 100vh;
        display: flex;
        justify-content: center;
