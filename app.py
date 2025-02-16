@@ -89,7 +89,8 @@ def serve_script_js():
 # Serve files from the data folder (for dynamic context data)
 @app.route('/data/<path:filename>')
 def serve_data(filename):
-    return send_from_directory('data', filename)
+    data_path = os.path.join(app.root_path, 'data')
+    return send_from_directory(data_path, filename)
 
 # Home route
 @app.route("/")
