@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let contextData = {};
 
     // Load context data from JSON
-    fetch('context-data.json')
+    fetch('/data/context-data.json')
         .then(response => response.json())
         .then(data => {
             contextData = data;
