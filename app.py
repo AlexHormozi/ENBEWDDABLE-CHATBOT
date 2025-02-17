@@ -4,13 +4,12 @@ import pymongo
 import os
 from flask_cors import CORS
 
-# Set the static folder to "static" so all static files (HTML, CSS, JS, images) are served from there.
 app = Flask(__name__, static_folder="static")
-CORS(app)  # Allow cross-origin requests
+CORS(app)
 
-# Use environment variables for security (with fallback defaults)
-MONGO_URL = os.getenv("MONGO_URL", "mongodb+srv://batman:1%40mBATMAN@cluster0.edbvm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
+# MongoDB connection URL and Groq API key
+MONGO_URL = "mongodb+srv://batman:1%40mBATMAN@cluster0.edbvm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+GROQ_API_KEY = "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"
 
 # Connect to MongoDB
 client = pymongo.MongoClient(MONGO_URL)
@@ -18,22 +17,39 @@ db = client["chatbotDB"]
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-@app.route("/api/chat", methods=["GET"])
+@app.route("/api/upload_context", methods=["POST"])
+def upload_context():
+    user_id = request.form.get("user_id")
+    context_file = request.files.get("context_file")
+    if not user_id or not context_file:
+        return jsonify({"error": "Missing user_id or context file"}), 400
+
+    context_data = context_file.read().decode('utf-8')
+
+    # Update or create the user's context in the database
+    db.users.update_one(
+        {"user_id": user_id},
+        {"$set": {"context": context_data}},
+        upsert=True
+    )
+    return jsonify({"message": "Context data uploaded successfully"}), 200
+
+@app.route("/api/chat", methods=["POST"])
 def chat():
-    user_id = request.args.get("user_id")
-    query = request.args.get("query")
+    data = request.json
+    user_id = data.get("user_id")
+    query = data.get("query")
     if not user_id or not query:
-        return jsonify({"error": "Missing parameters"}), 400
+        return jsonify({"error": "Missing user_id or query"}), 400
 
     # Retrieve user-specific context from DB
     user_data = db.users.find_one({"user_id": user_id})
-    if not user_data:
-        return jsonify({"error": "User not found"}), 404
+    if not user_data or 'context' not in user_data:
+        return jsonify({"error": "User context not found"}), 404
 
     context_data = user_data.get("context", "Default chatbot context")
     system_prompt = f"""
-    You are a chatbot assisting {user_data['company_name']}.
-    Product: {user_data['product']}
+    You are a chatbot assisting the user.
     Context: {context_data}
     """
 
@@ -63,7 +79,12 @@ def generate_embed():
     if not user_id:
         return jsonify({"error": "Missing user_id"}), 400
 
-    embed_code = f'<script src="https://enbewddable-chatbot.onrender.com/embed.js" data-user-id="{user_id}" data-theme="light" data-color="#000"></script>'
+    embed_code = f'''
+    <iframe 
+        src="https://enbewddable-chatbot.onrender.com/index.html?user_id={user_id}"
+        style="width: 400px; height: 600px; border: none; position: fixed; bottom: 0; right: 0;"
+    ></iframe>
+    '''
     return jsonify({"embed_code": embed_code})
 
 # Serve embed.js from the static folder
@@ -71,7 +92,7 @@ def generate_embed():
 def serve_embed_js():
     return send_from_directory(app.static_folder, "embed.js")
 
-# Serve index.html from the static folder so you can load the full UI
+# Serve index.html from the static folder
 @app.route("/index.html")
 def serve_index_html():
     return send_from_directory(app.static_folder, "index.html")
