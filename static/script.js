@@ -7,13 +7,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.querySelector('.chat-messages');
     let contextData = {};
 
-    // Load context data from JSON
-    fetch('/data/context-data.json')
-        .then(response => response.json())
-        .then(data => {
-            contextData = data;
-        })
-        .catch(error => console.error('Error loading context data:', error));
+    // Parse URL parameters to get the user_id
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('user_id');
+
+    if (!userId) {
+        console.error('No user_id found in URL, using default context data.');
+        // Optionally, fallback to some default context data here
+    } else {
+        // Fetch dynamic context from your API endpoint
+        fetch(`https://enbewddable-chatbot.onrender.com/api/get_context?user_id=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.context) {
+                    contextData = data.context;
+                    console.log('Dynamic context loaded:', contextData);
+                } else {
+                    console.error('No context found in response:', data);
+                }
+            })
+            .catch(error => console.error('Error loading dynamic context data:', error));
+    }
 
     // Toggle Chatbot
     toggleBtn.addEventListener('click', (e) => {
@@ -45,9 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         resetTextareaHeight();
 
         try {
-            // Get response from Groq API
+            // Get response from Groq API with dynamic context
             const botResponse = await getGroqResponse(message);
-
             // Display bot response
             addMessage(botResponse, false);
         } catch (error) {
@@ -59,40 +72,40 @@ document.addEventListener('DOMContentLoaded', () => {
     async function getGroqResponse(userInput) {
         const apiKey = "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";
         const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-    
-        // Ensure context-data.json is properly formatted for context
+
+        // Build system context string from dynamic contextData
         const systemContext = `
             Company: ${contextData.company_name}
             Product: ${contextData.product}
             Description: ${contextData.description}
-            Key Features: ${contextData.key_features.join(", ")}
+            Key Features: ${contextData.key_features ? contextData.key_features.join(", ") : ""}
             Target Audience: ${contextData.target_audience}
             Value Proposition: ${contextData.value_proposition}
-    
+
             **Sales Strategy**:
-            - Attention: ${contextData.sales_strategy.attention}
-            - Interest: ${contextData.sales_strategy.interest}
-            - Desire: ${contextData.sales_strategy.desire}
-            - Action: ${contextData.sales_strategy.action}
-    
+            - Attention: ${contextData.sales_strategy ? contextData.sales_strategy.attention : ""}
+            - Interest: ${contextData.sales_strategy ? contextData.sales_strategy.interest : ""}
+            - Desire: ${contextData.sales_strategy ? contextData.sales_strategy.desire : ""}
+            - Action: ${contextData.sales_strategy ? contextData.sales_strategy.action : ""}
+
             **Objection Handling**:
-            - Pricing: ${contextData.objection_handling.pricing}
-            - Complexity: ${contextData.objection_handling.complexity}
-            - Effectiveness: ${contextData.objection_handling.effectiveness}
+            - Pricing: ${contextData.objection_handling ? contextData.objection_handling.pricing : ""}
+            - Complexity: ${contextData.objection_handling ? contextData.objection_handling.complexity : ""}
+            - Effectiveness: ${contextData.objection_handling ? contextData.objection_handling.effectiveness : ""}
         `;
-    
-        // Sales-Oriented System Prompt with Context Steering Fix
+
+        // Sales-Oriented System Prompt with Context Steering
         const systemPrompt = `
-            You are a highly skilled sales assistant for ${contextData.company_name}, specializing in selling ${contextData.product}.
+            You are a highly skilled sales assistant for ${contextData.company_name || "our company"}, specializing in selling ${contextData.product || "our product"}. 
             Your goal is to tactically engage customers, uncover their needs, and position the product as the ideal solution.
-            Always respond with confidence and clarity, ensuring that every answer is directly related to the product.
-    
-            If a question is off-topic, briefly acknowledge it, then transition back to how ${contextData.product} is relevant.
-    
+            Always respond with confidence and clarity, ensuring every answer is directly related to the product.
+            
+            If a question is off-topic, briefly acknowledge it, then transition back to how ${contextData.product || "the product"} is relevant.
+            
             Context Data:
             ${systemContext}
         `;
-    
+
         const requestBody = {
             model: "llama3-8b-8192",
             messages: [
@@ -102,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             temperature: 0.85,
             max_tokens: 300
         };
-    
+
         const response = await fetch(apiUrl, {
             method: "POST",
             headers: {
@@ -111,16 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(requestBody)
         });
-    
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`Groq API Error: ${errorText}`);
         }
-    
+
         const responseData = await response.json();
         return responseData.choices?.[0]?.message?.content || "I'm not sure how to respond to that.";
     }
-    
 
     function addMessage(text, isUser) {
         const messageDiv = document.createElement('div');
