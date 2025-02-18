@@ -6,7 +6,7 @@ import json
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder="static")
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Allow CORS from all origins
 
 # MongoDB connection URL and Groq API key
 MONGO_URL = "mongodb+srv://batman:1%40mBATMAN@cluster0.edbvm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
@@ -99,18 +99,20 @@ def generate_embed():
     if not user_id:
         return jsonify({"error": "Missing user_id"}), 400
 
-    embed_code = f'''
+    embed_code = f"""
     <iframe 
-        src="https://enbewddable-chatbot.onrender.com/index.html?user_id={user_id}"
-        style="width: 400px; height: 600px; border: none; position: fixed; bottom: 0; right: 0;">
+        src='https://enbewddable-chatbot.onrender.com/index.html?user_id={user_id}'
+        style='width: 400px; height: 600px; border: none; position: fixed; bottom: 0; right: 0;'>
     </iframe>
-    '''
-    return jsonify({"embed_code": embed_code})
+    """
+    return jsonify({"embed_code": embed_code.strip()})
 
 ### ✅ Serve Static Files ###
 @app.route("/embed.js")
 def serve_embed_js():
-    return send_from_directory(app.static_folder, "embed.js")
+    response = send_from_directory(app.static_folder, "embed.js")
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 @app.route("/index.html")
 def serve_index_html():
