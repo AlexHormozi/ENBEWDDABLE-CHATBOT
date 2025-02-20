@@ -107,11 +107,24 @@ def generate_embed():
     """
     return jsonify({"embed_code": embed_code.strip()})
 
-### ✅ Serve Static Files ###
+### ✅ New Endpoint: Get Dynamic Context for a User ###
+@app.route("/api/get_context", methods=["GET"])
+def get_context():
+    user_id = request.args.get("user_id")
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+    user_data = db.users.find_one({"user_id": user_id})
+    if not user_data or "context" not in user_data:
+        return jsonify({"error": "User context not found"}), 404
+    return jsonify({"context": user_data["context"]})
+
+### ✅ Serve Static Files with Enhanced CORS ###
 @app.route("/embed.js")
 def serve_embed_js():
     response = send_from_directory(app.static_folder, "embed.js")
     response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
     return response
 
 @app.route("/index.html")
