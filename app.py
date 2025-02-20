@@ -118,6 +118,28 @@ def get_context():
         return jsonify({"error": "User context not found"}), 404
     return jsonify({"context": user_data["context"]})
 
+### ✅ NEW: Update User Details (Name and Email) ###
+@app.route("/api/update_user_details", methods=["POST"])
+def update_user_details():
+    try:
+        data = request.json
+        user_id = data.get("user_id")
+        name = data.get("name")
+        email = data.get("email")
+        
+        if not user_id or not name or not email:
+            return jsonify({"error": "Missing user_id, name, or email"}), 400
+        
+        # Update the MongoDB record with the provided name and email
+        db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {"name": name, "email": email}},
+            upsert=True
+        )
+        return jsonify({"message": "User details updated successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 ### ✅ Serve Static Files with Enhanced CORS ###
 @app.route("/embed.js")
 def serve_embed_js():
