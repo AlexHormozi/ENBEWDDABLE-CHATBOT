@@ -176,4 +176,56 @@ document.addEventListener('DOMContentLoaded', () => {
         textarea.style.height = 'auto';
         textarea.style.height = textarea.scrollHeight + 'px';
     }
+
+    // --- User Details Form Functionality ---
+
+    // Function to show the user details form
+    function showUserDetailsForm() {
+        document.getElementById('user-details-form').style.display = 'block';
+    }
+
+    // Function to hide the user details form
+    function hideUserDetailsForm() {
+        document.getElementById('user-details-form').style.display = 'none';
+    }
+
+    // Add event listener for the form submission
+    document.getElementById('submit-user-details').addEventListener('click', async () => {
+        const name = document.getElementById('user-name').value.trim();
+        const email = document.getElementById('user-email').value.trim();
+        
+        // Parse the user_id from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user_id');
+
+        if (!name || !email || !userId) {
+            alert("Please fill in your name and email.");
+            return;
+        }
+        
+        try {
+            const response = await fetch('https://enbewddable-chatbot.onrender.com/api/update_user_details', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ user_id: userId, name: name, email: email })
+            });
+            
+            const data = await response.json();
+            if (response.ok) {
+                alert("Your details have been updated!");
+                hideUserDetailsForm();
+            } else {
+                alert("Error: " + data.error);
+            }
+        } catch (error) {
+            console.error("Error updating user details:", error);
+            alert("An error occurred. Please try again.");
+        }
+    });
+
+    // For demonstration purposes, show the form on page load.
+    // You may adjust this trigger based on your chatbot flow.
+    showUserDetailsForm();
 });
